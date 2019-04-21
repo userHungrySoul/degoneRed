@@ -112,6 +112,7 @@ app.get('/pagecount', function (req, res) {
 app.get('/test', function (req, res) {
   var col = db.collection('counts');
   var found = col.find({});
+  
   res.send({message:'Test Completed', data:found});
 });
 
