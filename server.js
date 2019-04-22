@@ -9,7 +9,7 @@ app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
-    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
+    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
 
@@ -110,10 +110,22 @@ app.get('/pagecount', function (req, res) {
 });
 
 app.get('/test', function (req, res) {
-  var col = db.collection('counts');
-  var found = col.find({});
-  
-  res.send({message:'Test Completed', data:found});
+  // var col = db.collection('counts').find();
+  // var mongodb = require('mongodb');
+  // mongodb.connect(mongoURL, function(err, conn) {
+  //   if (err) {
+  //     callback(err);
+  //     return;
+  //   }
+
+  //   db = conn;
+  //   dbDetails.databaseName = db.databaseName;
+  //   dbDetails.url = mongoURLLabel;
+  //   dbDetails.type = 'MongoDB';
+
+  //   console.log('Connected to MongoDB at: %s', mongoURL);
+  // });
+  res.send({message:'Test Completed', data:process.env});
 });
 
 // error handling
