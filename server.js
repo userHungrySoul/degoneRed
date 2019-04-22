@@ -110,7 +110,6 @@ app.get('/pagecount', function (req, res) {
 });
 
 app.get('/test', function (req, res) {
-  // var col = db.collection('counts').find();
   // var mongodb = require('mongodb');
   // mongodb.connect(mongoURL, function(err, conn) {
   //   if (err) {
@@ -125,7 +124,16 @@ app.get('/test', function (req, res) {
 
   //   console.log('Connected to MongoDB at: %s', mongoURL);
   // });
-  res.send({message:'Test Completed', data:process.env});
+  if (!db) {
+    initDb(function(err){});
+  }
+  var col = db.collection('counts').find();
+  var response = {
+    mongoURL:mongoURL,
+    processenv : process.env,
+    col:col
+  }
+  res.send({message:'Test Completed', data:dbDetails});
 });
 
 // User Management - Begin
