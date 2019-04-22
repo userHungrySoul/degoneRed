@@ -116,6 +116,58 @@ app.get('/test', function (req, res) {
   res.send({message:'Test Completed', data:found});
 });
 
+// User Management - Begin
+
+app.post('/registerUser', (req, res) => {
+	collectInputs(req, function callback(inputs){
+		Users.createUser(inputs, (CB)=>{
+			res.send(CB);
+		});
+	});
+});
+
+app.post('/getUsers', (req, res) => {
+		Users.getUsers((CB)=>{
+			res.send(CB);
+		});
+});
+
+app.post('/getUser', (req, res) => {
+	collectInputs(req, function callback(inputs){
+		Users.getUser(inputs, (CB)=>{
+			res.send(CB);
+		});
+	});
+});
+
+app.post('/updateUser', (req, res) => {
+	collectInputs(req, function callback(inputs){
+		Users.updateUser(inputs, (CB)=>{
+			res.send(CB);
+		});
+	});
+});
+
+app.post('/login', (req, res) => {
+	collectInputs(req, function callback(inputs){
+		Users.login(inputs, (CB)=>{
+			res.send(CB);
+		});
+	});
+});
+
+app.post('/verifyUserToken', (req, res) => {
+	collectInputs(req, function callback(inputs){
+		Users.verifyUserToken(inputs, (CB)=>{
+			res.send(CB);
+		});
+	});
+});
+
+// User Management - End
+
+
+
 // error handling
 app.use(function(err, req, res, next){
   console.error(err.stack);
