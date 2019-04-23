@@ -140,12 +140,12 @@ app.post('/addUser', (req, res) => {
 	  }
 	if (db) {
 		collectInputs(req, function callback(inputs){
-			db.collection("Users").insertOne(userInfo, function(err, result) {
-				if (err) res.send({message:"insersion failed, try again.", data:res});  
+			db.collection("Users").insertOne(inputs, function(err, result) {
+				if (err) res.send({message:"insersion failed, try again.", data:err});  
 				if(result){
-				    res.send({ message: userInfo.username + " registered sucessfully.", data:result});
+				    res.send({ message: inputs.username + " registered sucessfully.", inputs:inputs, data:result});
 				} else {
-				    res.send({ message: "Registration failed, try again.", data:result});
+				    res.send({ message: "Registration failed, try again.", inputs:inputs, data:result});
 				}
 			});
 		});
