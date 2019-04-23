@@ -143,15 +143,15 @@ app.post('/addUser', (req, res) => {
 			userID:"001"
 		};
 		db.collection("Users").insertOne(userInfo, function(err, result) {
-			if (err) CB("insersion failed, try again.");;  
+			if (err) res.send("insersion failed, try again.");;  
 			if(result.ok){
-			    CB(userInfo.username + " registered sucessfully.");
+			    res.send(userInfo.username + " registered sucessfully.");
 			} else {
-			    CB("Registration failed, try again.");
+			    res.send("Registration failed, try again.");
 			}
 		});
 	} else {
-	CB("db init failed, try again.");
+		res.send("db init failed, try again.");
 	}
 });
 
