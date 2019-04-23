@@ -147,9 +147,12 @@ app.post('/registerUser', (req, res) => {
 });
 
 app.post('/getUsers', (req, res) => {
+	collectInputs(req, function callback(inputs){
 		Users.getUsers((CB)=>{
 			res.send(CB);
 		});
+	});
+		
 });
 
 app.post('/getUser', (req, res) => {
