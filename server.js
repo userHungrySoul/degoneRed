@@ -2,6 +2,7 @@
 var express = require('express'),
     app     = express(),
     morgan  = require('morgan');
+var jwt = require('jsonwebtoken');
 
 var collectInputs = require('./collectInput');
     
@@ -140,27 +141,45 @@ app.post('/addUser', (req, res) => {
 	  }
 	if (db) {
 		collectInputs(req, function callback(inputs){
-			db.collection("Users").insertOne(inputs, function(err, result) {
-				if (err) res.send({message:"insersion failed, try again.", data:err});  
-				if(result){
-				    res.send({ message: inputs.username + " registered sucessfully.", inputs:inputs, data:result});
-				} else {
-				    res.send({ message: "Registration failed, try again.", inputs:inputs, data:result});
-				}
-			});
+			if(inputs.userID && inputs.username && inputs.password){
+				db.collection("Users").insertOne(inputs, function(err, result) {
+					if (err) res.send({status:false,message:"insersion failed, try again.", data:err});  
+					if(result){
+					    res.send({status:true, message: inputs.username + " registered sucessfully.", inputs:inputs, data:result});
+					} else {
+					    res.send({status:false, message: "Registration failed, try again.", inputs:inputs, data:result});
+					}
+				});
+			} else {
+				inputs.password = null;
+			    res.send({status:false, message: "Invalid Inputs", inputs:inputs});
+			}
 		});
 	} else {
-		res.send({message:"db init failed, try again."});
+		res.send({status:false, message:"db init failed, try again."});
 	}
 });
 
 app.post('/getUsers', (req, res) => {
-	collectInputs(req, function callback(inputs){
-		Users.getUsers((CB)=>{
-			res.send(CB);
+	if (!db) {
+	    initDb(function(err){});
+	  }
+	if (db) {
+		collectInputs(req, function callback(inputs){
+			db.collection("Users").find({}, { projection: { _id: 1, userID: 1, username: 1 } }).toArray(function(err, result) {
+			    if (err) res.send(err);  
+			    if(result){
+				res.send({status:true, message:"Users details", data:result});
+			    } else if(result == null){
+				res.send({status:false, message:"No records found"});
+			    } else {
+				res.send({status:false, message:"Retriving user details failed", data:result});
+			    }
+			});
 		});
-	});
-		
+	} else {
+		res.send({status:false, message:"db init failed, try again."});
+	}	
 });
 
 app.post('/getUser', (req, res) => {
@@ -180,19 +199,58 @@ app.post('/updateUser', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-	collectInputs(req, function callback(inputs){
-		Users.login(inputs, (CB)=>{
-			res.send(CB);
+	if (!db) {
+	    initDb(function(err){});
+	  }
+	if (db) {
+		collectInputs(req, function callback(userInfo){
+			if(userInfo.username && userInfo.password){
+				 var searchingParameter = {
+					username:userInfo.username,
+					password:userInfo.password
+				};
+				db.collection("Users").findOne(searchingParameter, function(err, result) {
+					if (err) res.send(err);  
+					if(result){
+					    delete result.password; // for security purpose
+					    result.token = jwt.sign({ isTokenValid: true, userData:result}, 'secret', { expiresIn: 100 });
+					    res.send({status:true, message:"User login successfully", data:result});
+					} else if(result == null){
+					    res.send({status:false, message:"Incorrect credentials"});
+					} else {
+					    res.send({status:false, message:"Login failed", data:result});
+					}
+				    });
+			    } else {
+				res.send({status:false, message:"Invalid Data"});
+			    }
 		});
-	});
+	} else {
+		res.send({status:false, message:"db init failed, try again."});
+	}
 });
 
 app.post('/verifyUserToken', (req, res) => {
-	collectInputs(req, function callback(inputs){
-		Users.verifyUserToken(inputs, (CB)=>{
-			res.send(CB);
+	if (!db) {
+	    initDb(function(err){});
+	  }
+	if (db) {
+		collectInputs(req, function callback(userInfo){
+			if(userInfo.userToken){
+				jwt.verify(userInfo.userToken, 'secret', function(err, decoded) {
+				    if (err) {
+					res.send({status:false, isTokenValid: false,  message:"Session Expired"});
+					return; // use return; because when we are inside jwt.verify(), CB() outer if() is again execute after the above call which results in multiple call exception at same time
+				    }
+				    res.send({status:true, message:decoded});
+				});
+			    } else {
+				res.send({status:false, message:"Invalid Data"});
+			    }
 		});
-	});
+	} else {
+		res.send({status:false, message:"db init failed, try again."});
+	}
 });
 
 // User Management - End
