@@ -2,6 +2,8 @@
 var express = require('express'),
     app     = express(),
     morgan  = require('morgan');
+
+var collectInputs = require('./collectInput');
     
 Object.assign=require('object-assign')
 
@@ -137,18 +139,15 @@ app.get('/addUser', (req, res) => {
 	    initDb(function(err){});
 	  }
 	if (db) {
-		var userInfo = {
-			username:"uday",
-			password:"uday",
-			userID:"001"
-		};
-		db.collection("Users").insertOne(userInfo, function(err, result) {
-			if (err) res.send({message:"insersion failed, try again.", data:res});  
-			if(result){
-			    res.send({ message: userInfo.username + " registered sucessfully.", data:result});
-			} else {
-			    res.send({ message: "Registration failed, try again.", data:result});
-			}
+		collectInputs(req, function callback(inputs){
+			db.collection("Users").insertOne(userInfo, function(err, result) {
+				if (err) res.send({message:"insersion failed, try again.", data:res});  
+				if(result){
+				    res.send({ message: userInfo.username + " registered sucessfully.", data:result});
+				} else {
+				    res.send({ message: "Registration failed, try again.", data:result});
+				}
+			});
 		});
 	} else {
 		res.send({message:"db init failed, try again."});
