@@ -134,7 +134,7 @@ app.post('/registerUser', (req, res) => {
 	});
 });
 
-app.get('/addUser', (req, res) => {
+app.post('/addUser', (req, res) => {
 	if (!db) {
 	    initDb(function(err){});
 	  }
