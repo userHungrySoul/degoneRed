@@ -132,7 +132,7 @@ app.post('/registerUser', (req, res) => {
 	});
 });
 
-app.post('/addUser', (req, res) => {
+app.get('/addUser', (req, res) => {
 	if (!db) {
 	    initDb(function(err){});
 	  }
@@ -143,15 +143,15 @@ app.post('/addUser', (req, res) => {
 			userID:"001"
 		};
 		db.collection("Users").insertOne(userInfo, function(err, result) {
-			if (err) res.send("insersion failed, try again.");;  
-			if(result.ok){
-			    res.send(userInfo.username + " registered sucessfully.");
+			if (err) res.send({message:"insersion failed, try again.", data:res});  
+			if(result){
+			    res.send({ message: userInfo.username + " registered sucessfully.", data:result});
 			} else {
-			    res.send("Registration failed, try again.");
+			    res.send({ message: "Registration failed, try again.", data:result});
 			}
 		});
 	} else {
-		res.send("db init failed, try again.");
+		res.send({message:"db init failed, try again."});
 	}
 });
 
