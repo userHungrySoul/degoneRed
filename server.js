@@ -116,7 +116,6 @@ app.get('/test', function (req, res) {
   var col = db.collection('counts').find();
   var response = {
     mongoURL:mongoURL,
-    processenv : process.env,
     col:col,
     dbDetails:dbDetails
   }
