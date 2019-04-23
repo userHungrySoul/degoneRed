@@ -140,28 +140,9 @@ app.get('/test', function (req, res) {
 
 app.post('/registerUser', (req, res) => {
 	collectInputs(req, function callback(inputs){
-// 		Users.createUser(inputs, (CB)=>{
-// 			res.send(CB);
-// 		});
-		if (!db) {
-			initDb(function(err){});
-		      }
-		    if(db){
-			if(userInfo.userID && userInfo.username && userInfo.password){
-			    db.collection("Users").insertOne(userInfo, function(err, result) {
-				if (err) res.send(err);  
-				if(result.ok){
-				    CB(userInfo.username + " registered sucessfully.");
-				} else {
-				    CB("Registration failed, try again.");
-				}
-			    });
-			} else {
-			    CB("Invalid Data");
-			}
-		    } else {
-			    CB("DB init failed");
-			}
+		Users.createUser(inputs, (CB)=>{
+			res.send(CB);
+		});
 	});
 });
 
