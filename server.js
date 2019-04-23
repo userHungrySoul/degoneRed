@@ -132,6 +132,27 @@ app.post('/registerUser', (req, res) => {
 	});
 });
 
+app.post('/addUser', (req, res) => {
+	if (!db) {
+	    initDb(function(err){});
+	  }
+	if (db) {
+		var userInfo = {
+			username:"uday",
+			password:"uday",
+			userID:"001"
+		};
+		db.collection("Users").insertOne(userInfo, function(err, result) {
+			if (err) res.send(err);  
+			if(result.ok){
+			    CB(userInfo.username + " registered sucessfully.");
+			} else {
+			    CB("Registration failed, try again.");
+			}
+		});
+	}
+});
+
 app.post('/getUsers', (req, res) => {
 	collectInputs(req, function callback(inputs){
 		Users.getUsers((CB)=>{
