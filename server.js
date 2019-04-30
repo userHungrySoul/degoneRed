@@ -139,6 +139,7 @@ app.post('/addUser', (req, res) => {
 	if (!db) {
 	    initDb(function(err){});
 	  }
+	res.setHeader('Access-Control-Allow-Origin', '*');
 	if (db) {
 		collectInputs(req, function callback(inputs){
 			if(inputs.userID && inputs.username && inputs.password){
@@ -164,6 +165,7 @@ app.post('/getUsers', (req, res) => {
 	if (!db) {
 	    initDb(function(err){});
 	  }
+	res.setHeader('Access-Control-Allow-Origin', '*');
 	if (db) {
 		collectInputs(req, function callback(inputs){
 			db.collection("Users").find({}, { projection: { _id: 1, userID: 1, username: 1 } }).toArray(function(err, result) {
@@ -202,6 +204,7 @@ app.post('/login', (req, res) => {
 	if (!db) {
 	    initDb(function(err){});
 	  }
+	res.setHeader('Access-Control-Allow-Origin', '*');
 	if (db) {
 		collectInputs(req, function callback(userInfo){
 			if(userInfo.username && userInfo.password){
@@ -234,6 +237,7 @@ app.post('/verifyUserToken', (req, res) => {
 	if (!db) {
 	    initDb(function(err){});
 	  }
+	res.setHeader('Access-Control-Allow-Origin', '*');
 	if (db) {
 		collectInputs(req, function callback(userInfo){
 			if(userInfo.userToken){
